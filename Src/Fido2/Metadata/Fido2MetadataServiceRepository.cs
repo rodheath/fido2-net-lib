@@ -33,6 +33,8 @@ namespace Fido2NetLib
         protected readonly string _token;
         protected readonly string _tocUrl;
         protected readonly HttpClient _httpClient;
+        protected readonly bool _disableCrlCheck;
+        protected readonly X509Certificate2 _tocRootCert;
 
         //protected string _tocAlg;
 
@@ -41,6 +43,17 @@ namespace Fido2NetLib
             _tocUrl = "https://mds2.fidoalliance.org";
             _token = accessToken;
             _httpClient = httpClient ?? new HttpClient();
+            _disableCrlCheck = false;
+            _tocRootCert = null;
+        }
+
+        public Fido2MetadataServiceRepository(string accessToken, HttpClient httpClient, bool disableCrlCheck, X509Certificate2 tocRootCert)
+        {
+            _tocUrl = "https://mds2.fidoalliance.org";
+            _token = accessToken;
+            _httpClient = httpClient ?? new HttpClient();
+            _disableCrlCheck = disableCrlCheck;
+            _tocRootCert = tocRootCert;
         }
 
         public async Task<MetadataStatement> GetMetadataStatement(MetadataTOCPayload toc, MetadataTOCPayloadEntry entry)
@@ -149,7 +162,12 @@ namespace Fido2NetLib
             if (keyStrings.Count == 0)
                 throw new ArgumentException("No keys were present in the TOC header.");
 
-            var rootCert = GetX509Certificate(ROOT_CERT);
+            var rootCert = _tocRootCert;
+            if (rootCert == null)
+            {
+                rootCert = GetX509Certificate(ROOT_CERT);
+            }
+
             var tocCerts = keyStrings.Select(o => GetX509Certificate(o)).ToArray();
             var tocPublicKeys = keyStrings.Select(o => GetECDsaPublicKey(o)).ToArray();
 
@@ -182,14 +200,17 @@ namespace Fido2NetLib
             // if the root is trusted in the context we are running in, valid should be true here
             if (!certChainIsValid)
             {
-                foreach (var element in certChain.ChainElements)
+                if (!_disableCrlCheck)
                 {
-                    if (element.Certificate.Issuer != element.Certificate.Subject)
+                    foreach (var element in certChain.ChainElements)
                     {
-                        var cdp = CryptoUtils.CDPFromCertificateExts(element.Certificate.Extensions);
-                        var crlFile = await DownloadDataAsync(cdp);
-                        if (true == CryptoUtils.IsCertInCRL(crlFile, element.Certificate))
-                            throw new Fido2VerificationException(string.Format("Cert {0} found in CRL {1}", element.Certificate.Subject, cdp));
+                        if (element.Certificate.Issuer != element.Certificate.Subject)
+                        {
+                            var cdp = CryptoUtils.CDPFromCertificateExts(element.Certificate.Extensions);
+                            var crlFile = await DownloadDataAsync(cdp);
+                            if (true == CryptoUtils.IsCertInCRL(crlFile, element.Certificate))
+                                throw new Fido2VerificationException(string.Format("Cert {0} found in CRL {1}", element.Certificate.Subject, cdp));
+                        }
                     }
                 }
 

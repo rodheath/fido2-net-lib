@@ -1,0 +1,43 @@
+{
+  "legalHeader": "Metadata Legal Header: Version 1.00 Test TOC",
+  "no": 2,
+  "nextUpdate": "",
+  "entries": [
+    {
+      "aaguid": "177de07d-794c-4d63-afcf-14e06b67969b",
+      "hash": "dw5gdiTWiSZcpsRIhNCAfZsFTSPEc8EGxyvp3gi3N2w",
+      "url": "https://mds2.fidoalliance.org/metadata/177de07d-794c-4d63-afcf-14e06b67969b",
+      "statusReports": [
+        {
+          "status": "FIDO_CERTIFIED_L1",
+          "effectiveDate": "2019-07-11",
+          "certificate": "",
+          "url": "",
+          "certificationDescriptor": "FIDO2 Testing Good Authenticator",
+          "certificateNumber": "FIDO20020200206001",
+          "certificationPolicyVersion": "1.4.6",
+          "certificationRequirementsVersion": "1.1.1"
+        }
+      ],
+      "timeOfLastStatusChange": "2019-07-11"
+    },
+    {
+      "aaguid": "406e9911-74a3-4dbf-94b8-052917c67d59",
+      "hash": "LwXUtonScMr7AihfNfRIZvfcii02ij+dESQ3PuqzH7E",
+      "url": "https://mds2.fidoalliance.org/metadata/406e9911-74a3-4dbf-94b8-052917c67d59",
+      "statusReports": [
+        {
+          "status": "ATTESTATION_KEY_COMPROMISE",
+          "effectiveDate": "2020-08-05",
+          "certificate": "",
+          "url": "",
+          "certificationDescriptor": "FIDO2 Testing Bad Authenticator",
+          "certificateNumber": "FIDO20020200418002",
+          "certificationPolicyVersion": "1.4.6",
+          "certificationRequirementsVersion": "1.1.1"
+        }
+      ],
+      "timeOfLastStatusChange": "2020-08-05"
+    }
+    ]
+}

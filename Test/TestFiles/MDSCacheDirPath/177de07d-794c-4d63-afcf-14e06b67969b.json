@@ -1,0 +1,72 @@
+{
+  "legalHeader": "Metadata Legal Header: Version 1.00. Test",
+  "aaid": null,
+  "aaguid": "177de07d-794c-4d63-afcf-14e06b67969b",
+  "attestationCertificateKeyIdentifiers": null,
+  "description": "Test Security Key 1",
+  "alternativeDescriptions": null,
+  "authenticatorVersion": 50100,
+  "protocolFamily": "fido2",
+  "upv": [
+    {
+      "major": 1,
+      "minor": 0
+    }
+  ],
+  "assertionScheme": "FIDOV2",
+  "authenticationAlgorithm": 1,
+  "authenticationAlgorithms": [
+    1,
+    18
+  ],
+  "publicKeyAlgAndEncoding": 260,
+  "publicKeyAlgAndEncodings": null,
+  "attestationTypes": [
+    15879
+  ],
+  "userVerificationDetails": [
+    [
+      {
+        "userVerification": 1,
+        "caDesc": null,
+        "baDesc": null,
+        "paDesc": null
+      },
+      {
+        "userVerification": 4,
+        "caDesc": {
+          "base": 64,
+          "minLength": 4,
+          "maxRetries": 8,
+          "blockSlowdown": 0
+        },
+        "baDesc": null,
+        "paDesc": null
+      },
+      {
+        "userVerification": 512,
+        "caDesc": null,
+        "baDesc": null,
+        "paDesc": null
+      }
+    ]
+  ],
+  "keyProtection": 10,
+  "isKeyRestricted": false,
+  "isFreshUserVerificationRequired": false,
+  "matcherProtection": 4,
+  "cryptoStrength": 128,
+  "operatingEnv": "Secure Element (SE)",
+  "attachmentHint": 30,
+  "isSecondFactorOnly": false,
+  "tcDisplay": 0,
+  "tcDisplayContentType": null,
+  "tcDisplayPNGCharacteristics": null,
+  "attestationRootCertificates": [
+    ""
+  ],
+  "ecdaaTrustAnchors": null,
+  "icon": "",
+  "supportedExtensions": null,
+  "Hash": "fdUwxNNtpHzTM5ZxjvH6HowPfZHuVR1/3BxzqmXttFQ"
+}

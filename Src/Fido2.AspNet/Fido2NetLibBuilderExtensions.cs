@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using Fido2NetLib;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -45,11 +46,48 @@ namespace Microsoft.Extensions.DependencyInjection
             configAction(new Fido2NetLibBuilder(builder.Services));
         }
 
-        public static IFido2MetadataServiceBuilder AddFileSystemMetadataRepository(this IFido2MetadataServiceBuilder builder, string directoryPath)
+        /// <summary>
+        /// Adds a cached metadata service on demand.
+        /// This method avoids the long delays seen when retrieving all of the
+        /// metadata in one go at initialisation (typically ~30 seconds
+        /// depending on network).  It fetches only the metadata requested for
+        /// a particular aaguid on demand and once fetched it is cached in the
+        /// normal way.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="configAction"></param>
+        public static void AddCachedMetadataServiceOnDemand(this IFido2NetLibBuilder builder, Action<IFido2MetadataServiceBuilder> configAction)
+        {
+            builder.AddMetadataService<DistributedCacheMetadataServiceOnDemand>();
+
+            configAction(new Fido2NetLibBuilder(builder.Services));
+        }
+
+        /// <summary>
+        /// Adds a file system metadata repository to the service collection
+        /// with options.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="directoryPath">The directory where the individual
+        /// metadata statement files are located.</param>
+        /// <param name="tocName">The path with filename where the table of
+        /// contents file is located.  This file is typically created by
+        /// downloading it from the MDS server or hand crafting it depending on
+        /// the customer's requirements.</param>
+        /// <param name="cacheTimeDaysFromNow">This is used only when the tocName
+        /// parameter is specified.  It is the number of days, from the current
+        /// time, to cache the TOC for before re-reading it from the file system.
+        /// If this parameter is not provided the default value of zero means
+        /// the nextUpdate value read from the TOC file will be used.</param>
+        /// <returns></returns>
+        public static IFido2MetadataServiceBuilder AddFileSystemMetadataRepository(this IFido2MetadataServiceBuilder builder,
+            string directoryPath,
+            string tocName = null,
+            int cacheTimeDaysFromNow = 0)
         {
             builder.Services.AddTransient<IMetadataRepository, FileSystemMetadataRepository>(r =>
             {
-                return new FileSystemMetadataRepository(directoryPath);
+                return new FileSystemMetadataRepository(directoryPath, tocName, cacheTimeDaysFromNow);
             });
 
             return builder;
@@ -81,6 +119,32 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IMetadataRepository>(provider =>
             {
                 return new Fido2MetadataServiceRepository(accessToken, client);
+            });
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Method to add a FIDO metadata repository to the service collection
+        /// with CRL checking option.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="accessToken">The FIDO alliance access token</param>
+        /// <param name="disableCrlCheck">A flag to enable/disable CRL checking
+        /// of the TOC certificate trust chain</param>
+        /// <param name="tocRootCert">An optional FIDO metadata TOC root certificate</param>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        public static IFido2MetadataServiceBuilder AddFidoMetadataRepository(
+            this IFido2MetadataServiceBuilder builder,
+            string accessToken,
+            bool disableCrlCheck,
+            X509Certificate2 tocRootCert,
+            HttpClient client = null)
+        {
+            builder.Services.AddTransient<IMetadataRepository>(provider =>
+            {
+                return new Fido2MetadataServiceRepository(accessToken, client, disableCrlCheck, tocRootCert);
             });
 
             return builder;
