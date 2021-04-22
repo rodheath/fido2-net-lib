@@ -12,6 +12,13 @@ namespace Fido2NetLib
         public byte[] authenticatorData;
         public byte[] clientDataHash;
 
+        /// <summary>
+        /// Some attestation formats e.g. fido-u2f have no aaguid returned in the response but do have
+        /// it within an attestation certificate extension so we save the value obtained from the
+        /// certificate extension here.
+        /// </summary>
+        public Guid DiscoveredAaguid { get; set; }
+
         internal CBORObject Sig => attStmt["sig"];
         internal CBORObject X5c => attStmt["x5c"];
         internal CBORObject Alg => attStmt["alg"];

@@ -97,6 +97,14 @@ namespace Fido2NetLib
                 .Select(x => new X509Certificate2(x.GetByteString()))
                 .ToArray();
 
+            // For U2f we need to access the aaguid if it is available e.g.
+            // when reading a Fido2 security key from a mobile device over NFC.
+            var aaguid = AaguidFromAttnCertExts(attCert.Extensions);
+            if (null != aaguid)
+            {
+                DiscoveredAaguid = AttestedCredentialData.FromBigEndian(aaguid);
+            }
+
             return (AttestationType.AttCa, trustPath);
         }
     }

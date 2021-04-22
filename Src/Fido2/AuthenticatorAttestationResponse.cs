@@ -204,7 +204,7 @@ namespace Fido2NetLib
                 User = originalOptions.User,
                 Counter = authData.SignCount,
                 CredType = AttestationObject.Fmt,
-                Aaguid = authData.AttestedCredentialData.AaGuid,
+                Aaguid = verifier.DiscoveredAaguid != Guid.Empty ? verifier.DiscoveredAaguid : authData.AttestedCredentialData.AaGuid,
             };
 
             return result;
